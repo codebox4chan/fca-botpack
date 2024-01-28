@@ -54,9 +54,7 @@
     "string-similarity": "^4.0.4",
     "uuid": "^9.0.1",
     "websocket-stream": "^5.5.2",
-    "youtube-search-api": "^1.2.1",
-    
-    
+    "youtube-search-api": "^1.2.1"   
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
