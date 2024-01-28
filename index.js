@@ -3,7 +3,6 @@ const express = require("express");
 const app = express();
 const logger = require("./utils/log.js");
 const path = require('path');
-const net = require('net');
 const chalk = require('chalk');
 const pkg = require('./package.json');
 const check = require('get-latest-version');
@@ -51,9 +50,7 @@ if (configJson.removeSt) {
   return;
 }
 
-const getRandomPort = () => Math.floor(Math.random() * (65535 - 1024) + 1024);
-const PORT = getRandomPort();
-let currentPort = PORT;
+const PORT = 3000; // Set your desired port here
 
 app.get('/', function(req, res) {
   res.sendFile(path.join(__dirname, '/includes/login/cover/index.html'));
@@ -61,69 +58,51 @@ app.get('/', function(req, res) {
 
 app.get('/', (req, res) => res.sendStatus(200));
 
-  console.clear();
-  console.log(chalk.bold.dim(` ${process.env.REPL_SLUG}`.toUpperCase() + `(v${pkg.version})`));
-  logger(`Getting Started!`, "STARTER");
+console.clear();
+console.log(chalk.bold.dim(` ${process.env.REPL_SLUG}`.toUpperCase() + `(v${pkg.version})`));
+logger(`Getting Started!`, "STARTER");
+startServer();
+
+async function startServer() {
+  app.listen(PORT, () => {
+    logger.loader(`Bot is running on port: ${PORT}`);
+  });
+
+  app.on('error', (error) => {
+    logger(`An error occurred while starting the server: ${error}`, "SYSTEM");
+    process.exit(1);
+  });
+
   startBot(0);
+}
 
-  async function isPortAvailable(port) {
-    return new Promise((resolve) => {
-      const tester = net.createServer()
-        .once('error', () => resolve(false))
-        .once('listening', () => {
-          tester.once('close', () => resolve(true)).close();
-        })
-        .listen(port, '127.0.0.1');
-    });
-  }
-
-  function startServer(port) {
-    app.listen(port, () => {
-      logger.loader(`Bot is running on port: ${port}`);
+async function startBot(index) {
+  try {
+    const child = spawn("node", ["--trace-warnings", "--async-stack-traces", "main.js"], {
+      cwd: __dirname,
+      stdio: "inherit",
+      shell: true,
+      env: {
+        ...process.env,
+        CHILD_INDEX: index,
+      },
     });
 
-    app.on('error', (error) => {
-      logger(`An error occurred while starting the server: ${error}`, "SYSTEM");
-    });
-  }
-
-// # Please note that sometimes this function is the reason the bot will auto-restart, even if your custom.js auto-restart is set to false. This is because the port switches automatically if it is unable to connect to the current port. ↓↓↓↓↓↓
-
-  async function startBot(index) {
-    try {
-      const isAvailable = await isPortAvailable(currentPort);
-      if (!isAvailable) {
-        logger(`Retrying...`, "SYSTEM");
-        const newPort = getRandomPort();
-        logger.loader(`Current port ${currentPort} is not available. Switching to new port ${newPort}.`);
-        currentPort = newPort;
+    child.on("close", (codeExit) => {
+      if (codeExit !== 0) {
+        startBot(index);
       }
-      
-      startServer(currentPort);
+    });
 
-      const child = spawn("node", ["--trace-warnings", "--async-stack-traces", "main.js"], {
-        cwd: __dirname,
-        stdio: "inherit",
-        shell: true,
-        env: {
-          ...process.env,
-          CHILD_INDEX: index,
-        },
-      });
-
-      child.on("close", (codeExit) => {
-        if (codeExit !== 0) {
-          startBot(index);
-        }
-      });
-
-      child.on("error", (error) => {
-        logger(`An error occurred while starting the child process: ${error}`, "SYSTEM");
-      });
-    } catch (err) {
-      logger(`Error while starting the bot: ${err}`, "SYSTEM");
-    }
+    child.on("error", (error) => {
+      logger(`An error occurred while starting the child process: ${error}`, "SYSTEM");
+    });
+  } catch (err) {
+    logger(`Error while starting the bot: ${err}`, "SYSTEM");
   }
+}
+
+// The rest of your code remains unchanged...
 
 const excluded = configJson.UPDATE.EXCLUDED || [];
 
@@ -229,5 +208,5 @@ setTimeout(() => {
   command();
 }, 20000);
 
-  // __@YanMaglinte was Here__ //
+// __@YanMaglinte was Here__ //
 // -----------------------------//
