@@ -20,6 +20,7 @@
     "aes-js": "^3.1.2",
     "axios": "^1.6.7",
     "bluebird": "^3.7.2",
+    "base-64": "^1.0.0",
     "canvas": "^2.11.2",
     "chalk": "^4.1.2",
     "cheerio": "^1.0.0-rc.12",
@@ -33,10 +34,11 @@
     "get-latest-version": "^5.1.0",
     "googlethis": "^1.8.0",
     "gradient-string": "^2.0.2",
-    "hercai": "^12.1.0",
+    "hercai": "^12.1.1",
     "https-proxy-agent": "^7.0.2",
     "jimp": "^0.22.10",
     "lyrics-finder": "^21.7.0",
+    "luxon": "^3.4.4",
     "moment": "^2.30.1",
     "moment-timezone": "^0.5.44",
     "mqtt": "^4.3.7",
@@ -47,11 +49,14 @@
     "path": "^0.12.7",
     "replit.uptimer": "^0.0.3",
     "request": "^2.88.2",
+    "random-useragent": "^0.5.0",
     "simple-youtube-api": "^5.2.1",
     "string-similarity": "^4.0.4",
     "uuid": "^9.0.1",
     "websocket-stream": "^5.5.2",
-    "youtube-search-api": "^1.2.1"
+    "youtube-search-api": "^1.2.1",
+    
+    
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
